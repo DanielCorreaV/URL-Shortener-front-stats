@@ -149,7 +149,7 @@ async function selectAsset(code) {
 
 function copyCurrentShortUrl() {
   if (!selectedCode) return;
-  const targetUrl = `${API_BASE_URL}/${selectedCode}`;
+  const targetUrl = `${API_BASE_URL}/r/${selectedCode}`;
   navigator.clipboard.writeText(targetUrl).then(() => {
     alert(`¡Enlace corto copiado!: ${targetUrl}`);
   });
