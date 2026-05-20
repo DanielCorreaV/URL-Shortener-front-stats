@@ -7,7 +7,14 @@
     <title>Analytics Dashboard — SHRTN</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Estilo dinámico para marcar el link seleccionado en la barra lateral */
+        .sidebar-link-btn.active {
+            background-color: #f1f5f9;
+            border-color: #e2e8f0;
+            color: #4f46e5;
+        }
+    </style>
 </head>
 
 <body class="bg-[#f8fafc] text-slate-900 min-h-screen font-sans flex flex-col">
@@ -22,14 +29,24 @@
                     class="text-indigo-600 font-medium">Stats</span></span>
         </div>
 
-        <div class="flex items-center gap-3 border-l border-slate-200 pl-4">
-            <div class="w-8 h-8 rounded-full bg-indigo-100 border border-indigo-200 flex items-center justify-center text-indigo-700 text-xs font-semibold uppercase tracking-wider"
-                id="userAvatar">
-                --
-            </div>
-            <div class="hidden sm:block text-left">
-                <p id="userProfileName" class="text-xs font-semibold text-slate-800">...</p>
-                <p class="text-[10px] text-emerald-600 font-semibold tracking-wide uppercase">Módulo Analíticas</p>
+        <div class="flex items-center gap-4">
+            <button onclick="goHome()"
+                class="flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-indigo-600 bg-slate-100 hover:bg-indigo-50 px-3 py-2 rounded-xl border border-slate-200 transition-all">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                <span class="hidden sm:inline">Crear Links</span>
+            </button>
+
+            <div class="flex items-center gap-3 border-l border-slate-200 pl-4">
+                <div class="w-8 h-8 rounded-full bg-indigo-100 border border-indigo-200 flex items-center justify-center text-indigo-700 text-xs font-semibold uppercase tracking-wider"
+                    id="userAvatar">--</div>
+                <div class="hidden sm:block text-left">
+                    <p id="userProfileName" class="text-xs font-semibold text-slate-800">...</p>
+                    <p class="text-[10px] text-emerald-600 font-semibold tracking-wide uppercase">Módulo Analíticas</p>
+                </div>
+                <button onclick="logout()" class="text-slate-400 hover:text-red-500 transition-colors ml-2"
+                    title="Cerrar sesión">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                </button>
             </div>
         </div>
     </header>
@@ -57,7 +74,7 @@
                     tu espacio de trabajo para desplegar las analíticas de AWS en tiempo real.</p>
             </div>
 
-            <div id="analyticsContent" class="hidden space-y-6 animate-fadeIn">
+            <div id="analyticsContent" class="hidden space-y-6">
                 <div
                     class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-slate-200 p-6 rounded-2xl shadow-sm">
                     <div class="truncate">

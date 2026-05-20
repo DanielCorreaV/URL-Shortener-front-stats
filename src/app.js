@@ -1,12 +1,35 @@
 const API_BASE_URL = "https://jguawzn6ka.execute-api.us-east-1.amazonaws.com";
+const SHORTENER_FRONTEND_URL = "https://de7c8fkkejed4.cloudfront.net";
+const AUTH_URL = "https://d2ahv6rm0lok1j.cloudfront.net";
 
 let loadedAssets = [];
 let selectedCode = null;
 
 document.addEventListener("DOMContentLoaded", () => {
+  extractUrlCredentials();
   lucide.createIcons();
   verifySecureSession();
 });
+
+function extractUrlCredentials() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const tokenParam = urlParams.get("token");
+  const userParam = urlParams.get("username");
+  const autoSelectCode = urlParams.get("code");
+
+  if (tokenParam && userParam) {
+    localStorage.setItem("shrtn_token", decodeURIComponent(tokenParam));
+    localStorage.setItem("shrtn_username", decodeURIComponent(userParam));
+  }
+
+  if (autoSelectCode) {
+    localStorage.setItem("shrtn_selected_code", autoSelectCode);
+  }
+
+  if (tokenParam || userParam || autoSelectCode) {
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+}
 
 function verifySecureSession() {
   const token = localStorage.getItem("shrtn_token");
@@ -14,6 +37,7 @@ function verifySecureSession() {
 
   if (!token || !username) {
     alert("Acceso denegado. Por favor inicia sesión en la consola principal.");
+    window.location.href = SHORTENER_FRONTEND_URL;
     return;
   }
 
@@ -22,7 +46,13 @@ function verifySecureSession() {
     .substring(0, 2)
     .toUpperCase();
 
-  fetchUserAssets();
+  fetchUserAssets().then(() => {
+    const autoSelectCode = localStorage.getItem("shrtn_selected_code");
+    if (autoSelectCode) {
+      localStorage.removeItem("shrtn_selected_code");
+      selectAsset(autoSelectCode);
+    }
+  });
 }
 
 async function fetchUserAssets() {
@@ -58,7 +88,7 @@ function renderSidebarLinks() {
 
   loadedAssets.forEach((asset) => {
     const button = document.createElement("button");
-    button.className = `sidebar-link-btn w-full text-left p-3 rounded-xl border border-transparent hover:bg-slate-50 flex items-center justify-between gap-3 text-slate-700 hover:text-slate-900 font-medium text-sm transition-all`;
+    button.className = `sidebar-link-btn w-full text-left p-3 rounded-xl border border-slate-100 bg-white flex items-center justify-between gap-3 text-slate-700 hover:text-slate-900 font-medium text-sm transition-all`;
     button.id = `btn-${asset.code}`;
     button.onclick = () => selectAsset(asset.code);
 
@@ -153,4 +183,15 @@ function copyCurrentShortUrl() {
   navigator.clipboard.writeText(targetUrl).then(() => {
     alert(`¡Enlace corto copiado!: ${targetUrl}`);
   });
+}
+
+function goHome() {
+  const token = encodeURIComponent(localStorage.getItem("shrtn_token") || "");
+  const user = encodeURIComponent(localStorage.getItem("shrtn_username") || "");
+  window.location.href = `${SHORTENER_FRONTEND_URL}?token=${token}&username=${user}`;
+}
+
+function logout() {
+  localStorage.clear();
+  window.location.href = AUTH_URL;
 }
